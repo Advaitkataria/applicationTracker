@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,6 +22,6 @@ public interface ApplicationRepository extends JpaRepository<Application,Integer
 
     List<Application> findByAppliedDate(LocalDate appliedDate);
 
-    @Query("Select a FROM Application WHERE a.companyName = ?1 AND a.appliedDate = ?2")
+    @Query("Select a FROM Application a WHERE a.companyName = ?1 AND a.appliedDate = ?2")
     List<Application> findByCompanyNameAndAppliedDate(String companyName, LocalDate AppliedDate);
 }

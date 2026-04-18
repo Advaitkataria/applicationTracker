@@ -38,15 +38,28 @@ public class ApplicationService {
         }
         applicationRepository.deleteById(id);
     }
+    public Application updateApplication(int id, Application updatedApplication){
+        Application a = applicationRepository.findById(id).orElseThrow(()-> new ApplicationNotFoundException(id));
+        a.setJobTitle(updatedApplication.getJobTitle());
+        a.setCompanyName(updatedApplication.getCompanyName());
+        a.setJobTitle(updatedApplication.getJobTitle());
+        a.setStatus(updatedApplication.getStatus());
+        a.setAppliedDate(updatedApplication.getAppliedDate());
+        a.setNotes(updatedApplication.getNotes());
+        a.setSalaryExpectation(updatedApplication.getSalaryExpectation());
+
+        return applicationRepository.save(a);
+    }
 
     public List<Application> getByJobTitleContaining(String keyword){
         return applicationRepository.findByJobTitleContaining(keyword);
     }
-    public List<Application> getByStatus(String status){
-        if(applicationRepository.findByStatus(status).isEmpty()){
+    public List<Application> getByStatus(String status) {
+        List<Application> applications = applicationRepository.findByStatus(status);
+        if (applications.isEmpty()) {
             throw new ApplicationNotFoundException();
         }
-        return applicationRepository.findByStatus(status);
+        return applications;
     }
     public List<Application> getByAppliedDate(LocalDate appliedDate){
         if(applicationRepository.findByAppliedDate(appliedDate).isEmpty()){

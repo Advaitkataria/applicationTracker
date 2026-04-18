@@ -1,10 +1,9 @@
 package org.example.applicationtracker.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
@@ -15,6 +14,7 @@ import java.time.LocalDate;
 @Table(name="applications")
 public class Application {
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -22,13 +22,14 @@ public class Application {
     private String companyName;
     @NotBlank(message = "Job title cannot be blank")
     private String jobTitle;
+    @Pattern(regexp = "Applied|Offer|Rejected|Interviewing")
     @NotBlank(message = "Status cannot be blank")
     private String status;
-    @NotBlank(message = "Date cannot be blank")
+    @NotNull(message = "Date cannot be blank")
     private LocalDate appliedDate;
     @NotBlank(message = "Notes cannot be blank")
     private String notes;
-    @NotBlank(message = "Salary expectation cannot be blank")
+    @NotNull(message = "Salary expectation cannot be blank")
     @Positive(message = "Salary expectation cannot be negative")
     private int salaryExpectation;
 }
