@@ -1,5 +1,6 @@
 package org.example.applicationtracker.service;
 
+import org.example.applicationtracker.exception.EmailAlreadyExistException;
 import org.example.applicationtracker.model.User;
 import org.example.applicationtracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class AuthService {
     }
 
     public String register(User user){
+        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+            throw new EmailAlreadyExistException("Email already exists");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("ROLE_USER");
         userRepository.save(user);
@@ -33,8 +37,18 @@ public class AuthService {
     }
 
     public Map<String,String> login(String email, String password){
+
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email,password));
         String token = jwtService.generateToken(email);
         return Map.of("token",token);
+    }
+    public String registerAdmin(User user){
+        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+            throw new EmailAlreadyExistException("Email already exists");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole("ROLE_ADMIN");
+        userRepository.save(user);
+        return "Admin registered successfully";
     }
 }

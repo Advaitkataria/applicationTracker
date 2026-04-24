@@ -15,13 +15,9 @@ import java.util.List;
 public interface ApplicationRepository extends JpaRepository<Application,Integer> {
 
     Page<Application> findAll(Pageable pageable);
+ 
 
-    List<Application> findByJobTitleContaining(String keyword);
-
-    List<Application> findByStatus(String status);
-
-    List<Application> findByAppliedDate(LocalDate appliedDate);
-
-    @Query("Select a FROM Application a WHERE a.companyName = ?1 AND a.appliedDate = ?2")
-    List<Application> findByCompanyNameAndAppliedDate(String companyName, LocalDate AppliedDate);
+    Page<Application> findByUserEmail(String email,Pageable pageable);
+    List<Application> findByUserEmailAndJobTitleContaining(String email,String keyword);
+    List<Application> findByUserEmailAndStatus(String email,String status);
 }

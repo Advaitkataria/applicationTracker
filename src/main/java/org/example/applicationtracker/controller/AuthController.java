@@ -34,5 +34,10 @@ public class AuthController {
             return new ResponseEntity<>(authService.login(email,password),HttpStatus.OK);
     }
 
+    @PostMapping("/admin-register")
+    public ResponseEntity<String> registerAdmin(@RequestBody User user){
+        return new ResponseEntity<>(authService.registerAdmin(user),HttpStatus.CREATED);
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package org.example.applicationtracker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,4 +33,9 @@ public class Application {
     @NotNull(message = "Salary expectation cannot be blank")
     @Positive(message = "Salary expectation cannot be negative")
     private int salaryExpectation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false)
+    @JsonIgnore
+    private User user;
 }
