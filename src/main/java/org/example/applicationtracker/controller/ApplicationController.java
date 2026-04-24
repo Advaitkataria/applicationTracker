@@ -3,10 +3,12 @@ package org.example.applicationtracker.controller;
 import jakarta.validation.Valid;
 import org.example.applicationtracker.model.Application;
 import org.example.applicationtracker.service.ApplicationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -17,6 +19,7 @@ import java.util.List;
 public class ApplicationController {
 
     private final ApplicationService applicationService;
+    @Autowired
     public ApplicationController(ApplicationService applicationService){
         this.applicationService=applicationService;
     }
@@ -32,6 +35,7 @@ public class ApplicationController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @applicationService.isOwner(#id)")
     public ResponseEntity<Void> deleteApplication(@PathVariable int id){
         applicationService.deleteApplication(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -47,20 +51,11 @@ public class ApplicationController {
         return new ResponseEntity<>(applicationService.getByStatus(status),HttpStatus.OK);
     }
 
-    @GetMapping("/date")
-    public ResponseEntity<List<Application>> getByDate(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate appliedDate) {
-        return new ResponseEntity<>(
-                applicationService.getByAppliedDate(appliedDate), HttpStatus.OK);
-    }
-
-    @GetMapping("/filter/{companyName}/{appliedDate}")
-    public ResponseEntity<List<Application>> getByCompanyNameAndAppliedDate(@PathVariable String companyName, @PathVariable LocalDate appliedDate){
-        return new ResponseEntity<>(applicationService.getByCompanyNameAndAppliedDate(companyName,appliedDate),HttpStatus.OK);
-    }
     @PutMapping("/{id}")
     public ResponseEntity<Application> updateStatus(@PathVariable int id,@RequestBody Application updatedApplication){
         return new ResponseEntity<>(applicationService.updateApplication(id,updatedApplication),HttpStatus.OK);
     }
+
+
 
 }
