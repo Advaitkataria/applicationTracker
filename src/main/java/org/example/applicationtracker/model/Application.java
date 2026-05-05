@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -38,4 +40,7 @@ public class Application {
     @JoinColumn(name = "user_id",nullable = false)
     @JsonIgnore
     private User user;
+
+    @OneToMany(mappedBy = "application",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Interview> interviews = new ArrayList<>();
 }
