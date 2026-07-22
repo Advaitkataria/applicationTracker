@@ -1,5 +1,6 @@
 package org.example.applicationtracker.service;
 
+import jakarta.transaction.Transactional;
 import org.example.applicationtracker.exception.ApplicationNotFoundException;
 import org.example.applicationtracker.exception.UnauthorizedAccessException;
 import org.example.applicationtracker.model.Application;
@@ -31,13 +32,13 @@ public class ApplicationService {
         return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public Page<Application> getAllApplications(int page,int size){
-        Pageable pageable = PageRequest.of(page, size);
+    public List<Application> getAllApplications(){
+//        Pageable pageable = PageRequest.of(page, size);
         String email = getCurrentUser().getEmail();
         if(getCurrentUser().getRole().equals("ROLE_ADMIN")){
-            return applicationRepository.findAll(pageable);
+            return applicationRepository.findAll();
         }
-        return applicationRepository.findByUserEmail(email,pageable);
+        return applicationRepository.findByUserEmail(email);
     }
     public Application addApplication(Application application){
         application.setUser(getCurrentUser());
@@ -46,6 +47,9 @@ public class ApplicationService {
     public void deleteApplication(int id){
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new ApplicationNotFoundException(id));
+        if(!application.getUser().getEmail().equals(getCurrentUser().getEmail())){
+            throw new UnauthorizedAccessException("You can delete only your own applications");
+        }
         applicationRepository.deleteById(id);
     }
     public Application updateApplication(int id, Application updatedApplication){
@@ -81,6 +85,12 @@ public class ApplicationService {
                 .orElseThrow(() -> new ApplicationNotFoundException(id));
 
         return application.getUser().getEmail().equals(email);
+    }
+
+    @Transactional
+    public List<Application> getAllApplicationWithInterviews(){
+        String email = getCurrentUser().getEmail();
+        return applicationRepository.findByUserEmailWithInterviews(email);
     }
 
 

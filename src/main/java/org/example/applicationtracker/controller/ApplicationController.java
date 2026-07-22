@@ -25,8 +25,8 @@ public class ApplicationController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Application>> getAllApplications(@RequestParam int page, @RequestParam int size){
-        return new ResponseEntity<>(applicationService.getAllApplications(page, size), HttpStatus.OK);
+    public ResponseEntity<List<Application>> getAllApplications(@RequestParam int page, @RequestParam int size){
+        return new ResponseEntity<>(applicationService.getAllApplications(), HttpStatus.OK);
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class ApplicationController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @applicationService.isOwner(#id)")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteApplication(@PathVariable int id){
         applicationService.deleteApplication(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -54,6 +54,11 @@ public class ApplicationController {
     @PutMapping("/{id}")
     public ResponseEntity<Application> updateStatus(@PathVariable int id,@RequestBody Application updatedApplication){
         return new ResponseEntity<>(applicationService.updateApplication(id,updatedApplication),HttpStatus.OK);
+    }
+
+    @GetMapping("/with-interviews")
+    public ResponseEntity<List<Application>> getAllWithInterviews(){
+        return new ResponseEntity<>(applicationService.getAllApplicationWithInterviews(),HttpStatus.OK);
     }
 
 
