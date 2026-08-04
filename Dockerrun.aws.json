@@ -1,0 +1,39 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "330124996771.dkr.ecr.ca-central-1.amazonaws.com/job-tracker",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": 8080,
+      "HostPort": 80
+    }
+  ],
+  "Environment": [
+    {
+      "Name": "SPRING_DATASOURCE_URL",
+      "Value": "database-1.cda6aqsoctkq.ca-central-1.rds.amazonaws.com"
+    },
+    {
+      "Name": "SPRING_DATASOURCE_USERNAME",
+      "Value": "admin"
+    },
+    {
+      "Name": "SPRING_DATASOURCE_PASSWORD",
+      "Value": "aPGOB9BAqNBS1dgtYDX4"
+    },
+    {
+      "Name": "SPRING_JPA_HIBERNATE_DDL_AUTO",
+      "Value": "update"
+    },
+    {
+      "Name": "SPRING_FLYWAY_ENABLED",
+      "Value": "false"
+    },
+    {
+      "Name": "JWT_SECRET",
+      "Value": "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
+    }
+  ]
+}
