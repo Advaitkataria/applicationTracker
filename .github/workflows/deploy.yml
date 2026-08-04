@@ -12,20 +12,6 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: testpassword
-          MYSQL_DATABASE: testdb
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,14 +22,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+
       - name: Run tests
-        env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/testdb
-          SPRING_DATASOURCE_USERNAME: root
-          SPRING_DATASOURCE_PASSWORD: testpassword
-          SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
-          SPRING_FLYWAY_ENABLED: "false"
-          JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
         run: mvn test
 
   deploy:
@@ -86,6 +71,6 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: job-tracker
           environment_name: job-tracker-env
+          version_label: ${{ github.sha }}
           region: ${{ secrets.AWS_REGION }}
-          image_uri: >-
-            ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+          deployment_package: Dockerrun.aws.json
