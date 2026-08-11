@@ -2,13 +2,11 @@ package org.example.applicationtracker.controller;
 
 import org.example.applicationtracker.model.User;
 import org.example.applicationtracker.service.AuthService;
+import org.example.applicationtracker.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -17,9 +15,11 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtService jwtService;
     @Autowired
-    public AuthController(AuthService authService){
+    public AuthController(AuthService authService, JwtService jwtService){
         this.authService=authService;
+        this.jwtService= jwtService;
     }
 
     @PostMapping("/register")
@@ -37,6 +37,15 @@ public class AuthController {
     @PostMapping("/admin-register")
     public ResponseEntity<String> registerAdmin(@RequestBody User user){
         return new ResponseEntity<>(authService.registerAdmin(user),HttpStatus.CREATED);
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<String> validate(
+            @RequestHeader("Authorization") String authHeader) {
+
+        String token = authHeader.substring(7);
+        String email = jwtService.extractEmail(token);
+        return ResponseEntity.ok(email);
     }
 
 
