@@ -3,6 +3,7 @@ package org.example.applicationtracker.service;
 import jakarta.transaction.Transactional;
 import org.example.applicationtracker.exception.ApplicationNotFoundException;
 import org.example.applicationtracker.exception.UnauthorizedAccessException;
+import org.example.applicationtracker.kafka.StatusChangeProducer;
 import org.example.applicationtracker.model.Application;
 import org.example.applicationtracker.model.User;
 import org.example.applicationtracker.repository.ApplicationRepository;
@@ -21,11 +22,13 @@ import java.util.List;
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final UserRepository userRepository;
+    private final StatusChangeProducer statusChangeProducer;
 
     @Autowired
-    public ApplicationService(ApplicationRepository applicationRepository, UserRepository userRepository){
+    public ApplicationService(ApplicationRepository applicationRepository, UserRepository userRepository, StatusChangeProducer statusChangeProducer){
         this.applicationRepository=applicationRepository;
         this.userRepository=userRepository;
+        this.statusChangeProducer=statusChangeProducer;
     }
     private User getCurrentUser(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -64,6 +67,11 @@ public class ApplicationService {
         a.setNotes(updatedApplication.getNotes());
         a.setSalaryExpectation(updatedApplication.getSalaryExpectation());
 
+
+        statusChangeProducer.sendStatusChange("Application " + id + " status changed to " + updatedApplication.getStatus()
+                + " for user " + a.getUser().getEmail());
+
+        
         return applicationRepository.save(a);
     }
 
